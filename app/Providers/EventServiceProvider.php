@@ -18,6 +18,13 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        'App\Events\PodcastWasPurchased' => [
+            'App\Listeners\EmailPurchaseConfirmation',
+        ],
+    ];
+
+    protected $subscribe = [
+        'App\Listeners\UserEventListener'
     ];
 
     /**
