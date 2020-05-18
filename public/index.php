@@ -95,6 +95,8 @@ class Container
     //默认生成实例的回调函数
     protected function getClosure($abstract, $concrete)
     {
+        echo '进入 getClosure 方法----------------------------------------'.PHP_EOL;
+
         return function ($c) use ($abstract, $concrete) {
             //print_r($c);die;
             $method = ($abstract == $concrete) ? 'build' : 'make';
@@ -109,12 +111,12 @@ class Container
         //print_r($concrete);die;
         //print_r($this->isBuildable($concrete, $abstract));die;
         if ($this->isBuildable($concrete, $abstract)) {
-            print_r('执行build前 concrete ------'.print_r($concrete,true).PHP_EOL);
+            print_r('执行build前 concrete ----------'.PHP_EOL);
             $object = $this->build($concrete);
             print_r('执行build后 object ------'.print_r($object,true).PHP_EOL);
             //print_r($object);die;
         } else {
-            echo 44444;
+            //echo 44444;
             $object = $this->make($concrete);
         }
 
@@ -134,8 +136,11 @@ class Container
         //print_r($abstract);die;
         print_r("进入闭包getConcreate---------".$abstract.PHP_EOL);
         if (!isset($this->bindings[$abstract])) {
+            echo '进入 getConcrete 的 if判断----------'.PHP_EOL;
             return $abstract;
         }
+        echo '进入 getConcrete 跳过了 if判断----------'.PHP_EOL;
+
         //print_r($this->bindings[$abstract]);die;
         return $this->bindings[$abstract]['concrete'];
     }
@@ -148,14 +153,15 @@ class Container
         if ($concrete instanceof Closure) {
             echo '进行build中闭包方法了----------------------------------------'.PHP_EOL;
 
-            print_r('闭包前参数 this ---------'.print_r($this, true).PHP_EOL);
+            print_r('【闭包前方法 concrete】 +++++++++++++++++++++++++'.print_r($concrete, true).PHP_EOL);
+            print_r('【闭包前参数 this】 ++++++++++++++++++++++++++'.print_r($this, true).PHP_EOL);
             //print_r('闭包后结果 ---------'.print_r($concrete($this),true).PHP_EOL);
             //print_r($concrete($this));die;
 
             return $concrete($this);
         }
 
-        print_r('跳过闭包------'.PHP_EOL);
+        print_r('跳过闭包---------'.$concrete.PHP_EOL);
 
         $reflector = new ReflectionClass($concrete);
         if (!$reflector->isInstantiable()) {
@@ -169,7 +175,6 @@ class Container
 
         $dependencies = $constructor->getParameters();
         $instances = $this->getDependencies($dependencies);
-
         return $reflector->newInstanceArgs($instances);
     }
 
